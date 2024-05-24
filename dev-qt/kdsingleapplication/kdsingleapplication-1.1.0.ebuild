@@ -13,22 +13,32 @@ LICENSE="BSD MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64 ~x86"
 
-IUSE="doc examples test qt6"
+IUSE="doc examples test qt5 qt6"
 RESTRICT="!test? ( test )"
 
 DEPEND="
-	dev-qt/qtcore:5
-	dev-qt/qtnetwork:5
-	dev-qt/qtwidgets:5
+	qt5? (
+		dev-qt/qtcore:5
+		dev-qt/qtnetwork:5
+		dev-qt/qtwidgets:5
+	)
 	qt6? (
 		dev-qt/qtbase:6[network,widgets]
 	)
 "
-RDEPEND="${DEPEND}"
+RDEPEND="
+	test? (
+		qt5? ( dev-qt/qttest:5 )
+		qt6? ( dev-qt/qtbase:6[test] )
+	)
+	${DEPEND}
+"
 BDEPEND="
 	doc? (
 		app-text/doxygen[dot]
-		dev-qt/qthelp:5
+		qt5? (
+			dev-qt/qthelp:5
+		)
 		qt6? (
 			dev-qt/qttools:6[assistant]
 		)
@@ -36,11 +46,10 @@ BDEPEND="
 	examples? (
 		dev-util/patchelf
 	)
-	dev-qt/qttest:5
 "
 
 pkg_setup() {
-	MULTIBUILD_VARIANTS=( qt5 $(usev qt6) )
+	MULTIBUILD_VARIANTS=( $(usev qt5) $(usev qt6) )
 }
 
 src_configure() {
@@ -50,10 +59,10 @@ src_configure() {
 		)
 		if [[ ${MULTIBUILD_VARIANT} == qt6 ]]; then
 			mycmakeargs+=(
-				-DKDSingleApplication_DOCS=OFF
-				-DKDSingleApplication_EXAMPLES=OFF
+				-DKDSingleApplication_DOCS=$(usex doc)
+				-DKDSingleApplication_EXAMPLES=$(usex examples)
 				-DKDSingleApplication_QT6=ON
-				-DKDSingleApplication_TESTS=OFF
+				-DKDSingleApplication_TESTS=$(usex test)
 			)
 		else
 			mycmakeargs+=(
@@ -74,7 +83,7 @@ src_compile() {
 
 src_test() {
 	mytest() {
-		[[ ${MULTIBUILD_VARIANT} == qt5 ]] && cmake_src_test
+		cmake_src_test
 	}
 	multibuild_foreach_variant mytest
 }
