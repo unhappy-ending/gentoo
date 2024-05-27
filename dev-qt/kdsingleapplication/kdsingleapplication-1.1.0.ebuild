@@ -14,7 +14,6 @@ SLOT="0"
 KEYWORDS="~amd64"
 
 IUSE="doc examples test qt5 qt6"
-REQUIRED_USE="qt5? ( !qt6 ) qt6? ( !qt5 )"
 RESTRICT="!test? ( test )"
 
 DEPEND="
