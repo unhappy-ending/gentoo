@@ -17,20 +17,7 @@ IUSE="doc examples test qt5 qt6"
 REQUIRED_USE="qt5? ( !qt6 ) qt6? ( !qt5 )"
 RESTRICT="!test? ( test )"
 
-DEPEND=""
-BDEPEND="
-	doc? (
-		app-text/doxygen[dot]
-		qt5? (
-			dev-qt/qthelp:5
-		)
-		qt6? (
-			dev-qt/qttools:6[assistant]
-		)
-	)
-	examples? (
-		dev-util/patchelf
-	)
+DEPEND="
 	qt5? (
 		dev-qt/qtcore:5
 		dev-qt/qtnetwork:5
@@ -45,6 +32,18 @@ RDEPEND="
 		qt5? ( dev-qt/qttest:5 )
 	)
 	${DEPEND}
+"
+BDEPEND="
+	doc? (
+		app-text/doxygen[dot]
+		dev-qt/qthelp:5
+		qt6? (
+			dev-qt/qttools:6[assistant]
+		)
+	)
+	examples? (
+		dev-util/patchelf
+	)
 "
 
 pkg_setup() {
